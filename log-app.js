@@ -3,40 +3,43 @@ var path = "./notes.json";
 var notes = [];
 var dec = "------"
 
-// addNote("a titile2", "body");
-// addNote("ht1", "finish ht1 today");
-// addNote("ht2", "finish ht2 today");
-// addNote("gitHub", "push code to git");
-listNotes();
-readNote("ht2");
-removeNote("ht1");
-listNotes();
+exports.addNote = addNote;
+exports.removeNote = removeNote;
+exports.listNotes = listNotes;
+exports.readNote = readNote;
 
 function addNote(title, body) {
+  if(!title) { throw ("please, set the title"); }
+
+  if(!body) { body = "<no description>"; }
+
+  notes = readFile();
+
+  checkDuplicates(title);
+
   var note = {
     title: title,
     body: body
   };
-  notes = readFile();
-  //TODO check duplicates
 
   notes.push(note);
   writeFile(notes);
   console.log(dec);
   console.log("NOTE ADDED: ");
-  console.log("\t"+note.title);
+  console.log("\t"+note.title+"\n\t" + note.body);
   console.log(dec);
 }
 
 function listNotes() {
   try {
     notes = readFile();
-    console.log("\n========");
+    console.log("\nHere's the list of all notes:");
+    console.log(dec);
 
     for (note of notes) {
       console.log(note.title + " : " + note.body);
     }
-    console.log("\n========");
+    console.log(dec);
 
   } catch (error) {
     console.log("error while reading file: " + path +" : " + error);
@@ -74,6 +77,8 @@ function readNote(title) {
 }
 
 function findNote(title) {
+  if(!title) return null;
+
   var note = null;
   for (var i = 0; i < notes.length; i+=1) {
     if (notes[i].title.toLowerCase() === title.toLowerCase()) {
@@ -84,13 +89,18 @@ function findNote(title) {
   return note;
 }
 
+function checkDuplicates(title) {
+  if(findNote(title)) {
+    throw ("note: " + title+ " already exists");
+  }
+}
+
 function readFile() {
   try {
     var data = fs.readFileSync(path);
-    // console.log("READED: " + data);
       return (data != '') ? JSON.parse(data) : [];
     } catch(error) {
-      console.error("Problems while reading " + path + "\n" + error);
+      console.error("Problems with reading " + path + "\n" + error);
       return [];
     }
   }
