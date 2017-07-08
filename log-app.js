@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = "./notes.json";
 var notes = [];
 var dec = "------"
+var printer = require('./printer.js');
 
 exports.addNote = addNote;
 exports.removeNote = removeNote;
@@ -9,12 +10,11 @@ exports.listNotes = listNotes;
 exports.readNote = readNote;
 
 function addNote(title, body) {
+  //check empty fields
   if(!title) { throw ("please, set the title"); }
-
   if(!body) { body = "<no description>"; }
 
   notes = readFile();
-
   checkDuplicates(title);
 
   var note = {
@@ -24,26 +24,19 @@ function addNote(title, body) {
 
   notes.push(note);
   writeFile(notes);
-  console.log(dec);
-  console.log("NOTE ADDED: ");
-  console.log("\t"+note.title+"\n\t" + note.body);
-  console.log(dec);
+  printer.print("note added:", "\t"+note.title, "\t" + note.body)
 }
 
 function listNotes() {
-  try {
     notes = readFile();
-    console.log("\nHere's the list of all notes:");
-    console.log(dec);
 
+    printer.log("\nHere's the list of all notes:");
+    //form a string
+    var outputString = "\n";
     for (note of notes) {
-      console.log(note.title + " : " + note.body);
+      outputString += (note.title + " : " + note.body + "\n");
     }
-    console.log(dec);
-
-  } catch (error) {
-    console.log("error while reading file: " + path +" : " + error);
-  }
+    printer.print(outputString);
 }
 
 function removeNote(title) {
@@ -53,11 +46,10 @@ function removeNote(title) {
 
   var ind = notes.indexOf(note);
   if(ind === -1) {
-    console.log("no such note: " + title);
+    printer.print("no such note: " + title);
   } else {
     notes.splice(ind, 1);
-    console.log("note removed: " + title);
-    // console.log(notes);
+    printer.print("note removed: " + title);
     writeFile(notes);
   }
 }
@@ -68,11 +60,10 @@ function readNote(title) {
   var note = findNote(title);
 
   if(note) {
-    console.log(dec);
-    console.log(note.title + " : " + note.body);
-    console.log(dec);
+    printer.log("your note:")
+    printer.print(note.title + " : " + note.body);
   } else {
-    console.log("no note founded: " + title);
+    printer.print("no note founded: " + title);
   }
 }
 
@@ -91,18 +82,19 @@ function findNote(title) {
 
 function checkDuplicates(title) {
   if(findNote(title)) {
-    throw ("note: " + title+ " already exists");
+    throw ("note: " + title + " already exists");
   }
 }
 
 function readFile() {
-  try {
+  // try {
     var data = fs.readFileSync(path);
       return (data != '') ? JSON.parse(data) : [];
-    } catch(error) {
-      console.error("Problems with reading " + path + "\n" + error);
-      return [];
-    }
+    // } catch(error) {
+      // throw("Problems with reading " + path + "\n" + error);
+      // printer.print("Problems with reading " + path + "\n" + error);
+      // return [];
+    // }
   }
 
 function writeFile(notes) {

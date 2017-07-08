@@ -1,11 +1,12 @@
 var logger = require('./log-app.js');
+var printer = require('./printer.js');
+
 checkArgs(process.argv.slice(2));
 
 
 function checkArgs(args) {
   if(!args.length) {
-    //TODO info
-    console.log("please, use ADD | LIST | REMOVE | READ");
+    printer.print("please, use ADD | LIST | REMOVE | READ");
     return;
   }
 
@@ -13,24 +14,36 @@ function checkArgs(args) {
 
   switch (command.toUpperCase()) {
     case "ADD":
-      addNote(args[1], args[2]);
+      execute(logger.addNote, args[1], args[2]);
+      // addNote(args[1], args[2]);
       break;
 
     case "LIST":
-      logger.listNotes();
+      // logger.listNotes();
+      execute(logger.listNotes);
       break;
 
     case "REMOVE":
-      logger.removeNote(args[1]);
+      execute(logger.removeNote, args[1]);
+      // logger.removeNote(args[1]);
       break;
 
     case "READ":
-      logger.readNote(args[1]);
+      execute(logger.readNote, args[1]);
+      // logger.readNote(args[1]);
       break;
 
     default:
-      console.log("no such command: " + command);
+      printer.print("no such command: " + command);
       break;
+  }
+}
+
+function execute(func, title, body) {
+  try {
+    func(title, body);
+  } catch(e) {
+    printer.print("ERROR: " + e);
   }
 }
 
@@ -38,6 +51,6 @@ function addNote(title, body) {
   try {
     logger.addNote(title, body);
   } catch(e) {
-    console.log("ERROR: " + e);
+    printer.print("ERROR: " + e);
   }
 }
