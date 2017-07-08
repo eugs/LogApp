@@ -6,7 +6,7 @@ checkArgs(process.argv.slice(2));
 
 function checkArgs(args) {
   if(!args.length) {
-    printer.print("please, use ADD | LIST | REMOVE | READ");
+    printer.print("please, use ADD | LIST | REMOVE | READ | BURNALL");
     return;
   }
 
@@ -15,22 +15,22 @@ function checkArgs(args) {
   switch (command.toUpperCase()) {
     case "ADD":
       execute(logger.addNote, args[1], args[2]);
-      // addNote(args[1], args[2]);
       break;
 
     case "LIST":
-      // logger.listNotes();
       execute(logger.listNotes);
       break;
 
     case "REMOVE":
       execute(logger.removeNote, args[1]);
-      // logger.removeNote(args[1]);
       break;
 
     case "READ":
       execute(logger.readNote, args[1]);
-      // logger.readNote(args[1]);
+      break;
+
+    case "BURNALL":
+      execute(logger.removeAll, args[1]);
       break;
 
     default:
@@ -42,14 +42,6 @@ function checkArgs(args) {
 function execute(func, title, body) {
   try {
     func(title, body);
-  } catch(e) {
-    printer.print("ERROR: " + e);
-  }
-}
-
-function addNote(title, body) {
-  try {
-    logger.addNote(title, body);
   } catch(e) {
     printer.print("ERROR: " + e);
   }

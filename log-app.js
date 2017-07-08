@@ -1,20 +1,26 @@
 var fs = require('fs');
 var path = "./notes.json";
-var notes = [];
-var dec = "------"
 var printer = require('./printer.js');
+var notes = [];
 
 exports.addNote = addNote;
 exports.removeNote = removeNote;
 exports.listNotes = listNotes;
 exports.readNote = readNote;
+exports.removeAll = removeAll;
 
 function addNote(title, body) {
   //check empty fields
   if(!title) { throw ("please, set the title"); }
   if(!body) { body = "<no description>"; }
 
-  notes = readFile();
+  //create array even if file doesn't exists
+  try {
+    notes = readFile();
+  } catch(e) {
+    notes = []
+  }
+
   checkDuplicates(title);
 
   var note = {
@@ -29,6 +35,11 @@ function addNote(title, body) {
 
 function listNotes() {
     notes = readFile();
+
+    if(!notes.length) {
+      printer.print("Found no notes!");
+      return;
+    }
 
     printer.log("\nHere's the list of all notes:");
     //form a string
@@ -52,6 +63,12 @@ function removeNote(title) {
     printer.print("note removed: " + title);
     writeFile(notes);
   }
+}
+
+function removeAll() {
+  notes = [];
+  writeFile(notes);
+  printer.print("all notes were removed");
 }
 
 function readNote(title) {
@@ -87,14 +104,8 @@ function checkDuplicates(title) {
 }
 
 function readFile() {
-  // try {
     var data = fs.readFileSync(path);
-      return (data != '') ? JSON.parse(data) : [];
-    // } catch(error) {
-      // throw("Problems with reading " + path + "\n" + error);
-      // printer.print("Problems with reading " + path + "\n" + error);
-      // return [];
-    // }
+    return (data != '') ? JSON.parse(data) : [];
   }
 
 function writeFile(notes) {
