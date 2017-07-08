@@ -1,0 +1,26 @@
+{
+  "name": "todo-app",
+  "version": "1.0.0",
+  "description": "Simple todo notes app",
+  "main": "main.js",
+  "dependencies": {
+    "lodash": "^4.17.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node main.js list",
+    "add": "node main.js add TITLE BODY",
+    "read": "node main.js read title",
+    "remove": "node main.js remove title"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eugs/LogApp.git"
+  },
+  "author": "firestormius",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eugs/LogApp/issues"
+  },
+  "homepage": "https://github.com/eugs/LogApp#readme"
+}

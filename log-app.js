@@ -1,7 +1,8 @@
-var fs = require('fs');
+var fs = require("fs");
 var path = "./notes.json";
-var printer = require('./printer.js');
+var printer = require("./printer.js");
 var notes = [];
+var _ = require("lodash");
 
 exports.addNote = addNote;
 exports.removeNote = removeNote;
@@ -12,12 +13,16 @@ exports.removeAll = removeAll;
 function addNote(title, body) {
   //check empty fields
   if(!title) { throw ("please, set the title"); }
+  title = _.trim(title);
+  if(title.length <= 0) { throw ("empty title");}
+
   if(!body) { body = "<no description>"; }
 
   //create array even if file doesn't exists
   try {
     notes = readFile();
   } catch(e) {
+    printer.log("can't find file: " + path + ", will create one");
     notes = []
   }
 
@@ -42,6 +47,7 @@ function listNotes() {
     }
 
     printer.log("\nHere's the list of all notes:");
+
     //form a string
     var outputString = "\n";
     for (note of notes) {
@@ -55,13 +61,12 @@ function removeNote(title) {
 
   var note = findNote(title);
 
-  var ind = notes.indexOf(note);
-  if(ind === -1) {
-    printer.print("no such note: " + title);
-  } else {
-    notes.splice(ind, 1);
+  if(note) {
+    _.remove(notes, (n) => { return (n === note); });
     printer.print("note removed: " + title);
     writeFile(notes);
+  } else {
+    printer.print("no such note: " + title);
   }
 }
 
@@ -73,7 +78,6 @@ function removeAll() {
 
 function readNote(title) {
   notes = readFile();
-
   var note = findNote(title);
 
   if(note) {
@@ -87,13 +91,9 @@ function readNote(title) {
 function findNote(title) {
   if(!title) return null;
 
-  var note = null;
-  for (var i = 0; i < notes.length; i+=1) {
-    if (notes[i].title.toLowerCase() === title.toLowerCase()) {
-      note = notes[i];
-      break;
-    }
-  }
+  var note = _.find(notes, function (o) {
+    return o.title.toLowerCase() === title.toLowerCase();
+  });
   return note;
 }
 
